@@ -1,0 +1,57 @@
+generator client {
+  provider = "prisma-client" 
+}
+
+datasource db {
+  provider = "postgresql"
+
+}
+
+// Core User Model with RBAC
+model User {
+  id            String    @id @default(uuid())
+  email         String    @unique
+  name          String?
+  role          Role      @default(GROWER) 
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  // AcreLink Relations
+  spaces        Space[]   // Spaces listed by a Landowner
+  leases        Lease[]   // Leases requested by a Grower
+}
+
+
+// Agricultural Space Listing
+model Space {
+  id          String    @id @default(uuid())
+  title       String
+  description String
+  sizeSqFt    Float
+  pricePerMo  Float
+  isVerified  Boolean   @default(false)
+  ownerId     String
+  owner       User      @relation(fields: [ownerId], references: [id])
+  leases      Lease[]
+  createdAt   DateTime  @default(now())
+}
+
+// Leasing Agreement
+model Lease {
+  id          String    @id @default(uuid())
+  startDate   DateTime
+  endDate     DateTime
+  status      String    @default("PENDING") // PENDING, ACTIVE, COMPLETED
+  spaceId     String
+  growerId    String
+  space       Space     @relation(fields: [spaceId], references: [id])
+  grower      User      @relation(fields: [growerId], references: [id])
+  createdAt   DateTime  @default(now())
+}
+
+enum Role {
+  LANDOWNER
+  GROWER
+  INSPECTOR
+  ADMIN
+}
