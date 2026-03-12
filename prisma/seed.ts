@@ -1,4 +1,4 @@
-import 'dotenv/config'; // Must be first — loads .env before any other import reads process.env
+import 'dotenv/config';
 import { prisma } from '../src/lib/db';
 
 

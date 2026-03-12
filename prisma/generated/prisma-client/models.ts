@@ -8,7 +8,10 @@
  *
  * 🟢 You can import this file directly.
  */
-export type * from './models/User.js'
-export type * from './models/Space.js'
-export type * from './models/Lease.js'
-export type * from './commonInputTypes.js'
+export type * from './models/User'
+export type * from './models/Session'
+export type * from './models/Account'
+export type * from './models/Verification'
+export type * from './models/Space'
+export type * from './models/Lease'
+export type * from './commonInputTypes'
