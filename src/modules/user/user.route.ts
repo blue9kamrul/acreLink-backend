@@ -1,4 +1,3 @@
-// src/modules/user/user.routes.ts
 import express from 'express';
 import { UserController } from './user.controller';
 

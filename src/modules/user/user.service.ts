@@ -1,4 +1,3 @@
-// src/modules/user/user.service.ts
 import { prisma } from '../../lib/db';
 import { Role } from '../../../prisma/generated/prisma-client/client';
 

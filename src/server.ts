@@ -4,6 +4,7 @@ import cors from 'cors';
 import dotenv from 'dotenv';
 import { toNodeHandler } from "better-auth/node";
 import { auth } from './lib/auth';
+import globalErrorHandler from './middlewares/globalErrorHandler';
 
 dotenv.config();
 
@@ -24,6 +25,14 @@ app.use("/api/auth", toNodeHandler(auth));
 app.get('/api/health', (req: Request, res: Response) => {
     res.status(200).json({ status: 'AcreLink Backend is Live!' });
 });
+
+// 404 Not Found handler 
+app.use((req, res, next) => {
+    res.status(404).json({ success: false, message: 'Not Found', errorMessages: [{ path: req.originalUrl, message: 'API Route not found' }] });
+});
+
+// Global Error Handler 
+app.use(globalErrorHandler);
 
 app.listen(PORT, () => {
     console.log(`Server is running on http://localhost:${PORT}`);

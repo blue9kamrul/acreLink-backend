@@ -1,39 +1,39 @@
-// src/modules/user/user.controller.ts
 import { Request, Response } from 'express';
 import { UserService } from './user.service';
 import { UserValidation } from './user.validation';
+import catchAsync from '../../shared/catchAsync';
+import sendResponse from '../../shared/sendResponse';
 
-const getUserProfile = async (req: Request, res: Response): Promise<void> => {
-    try {
-        const { userId } = req.params;
-        const result = await UserService.getUserProfileFromDB(userId as string);
+const getUserProfile = catchAsync(async (req: Request, res: Response) => {
+    const { userId } = req.params;
+    const result = await UserService.getUserProfileFromDB(userId as string);
 
-        if (!result) {
-            res.status(404).json({ success: false, message: 'User not found' });
-            return;
-        }
-
-        res.status(200).json({ success: true, message: 'User fetched successfully', data: result });
-    } catch (err) {
-        res.status(500).json({ success: false, message: 'Failed to fetch user', error: err });
+    if (!result) {
+        throw new Error('User not found'); // The global handler will catch this!
     }
-};
 
-const updateUserRole = async (req: Request, res: Response): Promise<void> => {
-    try {
-        // 1. Validate the incoming request body using Zod
-        const validatedData = UserValidation.updateRoleZodSchema.parse({ body: req.body });
+    sendResponse(res, {
+        statusCode: 200,
+        success: true,
+        message: 'User fetched successfully',
+        data: result,
+    });
+});
 
-        const { userId } = req.params;
+const updateUserRole = catchAsync(async (req: Request, res: Response) => {
+    // Zod validation (If it fails, global error handler catches it)
+    const validatedData = UserValidation.updateRoleZodSchema.parse({ body: req.body });
+    const { userId } = req.params;
 
-        // 2. Call the service
-        const result = await UserService.updateUserRoleIntoDB(userId as string, validatedData.body);
+    const result = await UserService.updateUserRoleIntoDB(userId as string, validatedData.body);
 
-        res.status(200).json({ success: true, message: 'User role updated successfully', data: result });
-    } catch (err: any) {
-        res.status(400).json({ success: false, message: 'Validation or update failed', error: err.errors || err.message });
-    }
-};
+    sendResponse(res, {
+        statusCode: 200,
+        success: true,
+        message: 'User role updated successfully',
+        data: result,
+    });
+});
 
 export const UserController = {
     getUserProfile,
